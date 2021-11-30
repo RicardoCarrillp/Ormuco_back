@@ -144,33 +144,34 @@ def create_instance():
     if request.method == 'POST':
         json_body =request.json
         print(json_body["name"])
+        data = {
+            "server" :{
+                "name": json_body['name'],
+                "imageRef": imageID,
+                "flavorRef": flavor_id,
+                "networks": [{"uuid": networkID}],
+                "min_count": 1,
+                "max_count": 1,
+               "config_drive": True,
+                "block_device_mapping_v2": [
+                    {"uuid": imageID, "source_type": "image", "boot_index": 0,
+                     "delete_on_termination": True}],
+                "metadata": {"source_image": imageID}
+            }
+        }
+        print(data)
+        if key_name:
+            data["server"]["key_name"] = key_name
+
+        response = requests.post(url=url, headers=headers, json=data)
+
+        response.raise_for_status()
+        return response.json()["server"]
+
         # name =request.form['name']
     
 
     # key_nameF = requests.form['key_nameF']
-    data = {
-        "server" :{
-            "name": json_body['name'],
-            "imageRef": imageID,
-            "flavorRef": flavor_id,
-            "networks": [{"uuid": networkID}],
-            "min_count": 1,
-            "max_count": 1,
-           "config_drive": True,
-            "block_device_mapping_v2": [
-                {"uuid": imageID, "source_type": "image", "boot_index": 0,
-                 "delete_on_termination": True}],
-            "metadata": {"source_image": imageID}
-        }
-    }
-    print(data)
-    if key_name:
-        data["server"]["key_name"] = key_name
-
-    response = requests.post(url=url, headers=headers, json=data)
-
-    response.raise_for_status()
-    return response.json()["server"]
 
 
 
